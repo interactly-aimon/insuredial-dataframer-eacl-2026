@@ -1,0 +1,103 @@
+You are an expert annotator tasked with labeling healthcare coverage verification phone calls between an AI Patient Care Specialist ("Assistant") and a Human Insurance Representative ("User"). Produce ONLY the specified JSON schema—no additional commentary.
+
+### JSON Output Schema:
+
+For each field below, provide either:
+
+* `[start_turn, end_turn]` (inclusive integers)
+* `null` (if the described event does not occur)
+
+```json schema
+{
+  "ivr": [int, int|null],
+  "greeting": [int, int|null],
+  "patient_info": [int, int|null],
+  "coverage_check": [int, int|null],
+  "drug1_formulary": [int, int|null],
+  "drug1_restrictions": [int, int|null],
+  "drug1_copay": [int, int|null],
+  "drug2_formulary": [int, int|null],
+  "drug2_restrictions": [int, int|null],
+  "drug2_copay": [int, int|null],
+  "agent_interaction": [int, int|null]
+}
+```
+
+---
+
+### Annotation Guidelines (Follow Strictly)
+
+#### General Definitions:
+
+* **Turn**: Each utterance by either Assistant or User, indexed from 0.
+* **Turn Range**: Inclusive `[start_turn, end_turn]` for related utterances.
+* **Null**: Use explicitly if event never occurs.
+* **No overlaps**: Consecutive phases must overlap by at most one turn.
+
+#### Phase-specific Guidelines:
+
+### 1. IVR (Interactive Voice Response)
+
+* IVR spans start from the first automated speech (structured instructions, DTMF options like "Press 1", "Enter ID") and end immediately before the human representative's first utterance (typically a greeting like "Thank you for calling...").
+* Set as `null` if IVR is never present.
+* Start from turn 0
+
+### 2. Greeting
+
+* Span starts from initial explicit human greeting ("Hello", "Hi", etc.) between Assistant/User.
+* Ends once greeting exchange concludes.
+* Set as `null` if no explicit greeting occurs.
+
+### 3. Patient Information
+
+* Begins immediately after greeting ends.
+* Ends explicitly after User confirms patient record found or not found.
+* Includes troubleshooting, verification, or repeated attempts.
+* Set as `null` only if never explicitly initiated.
+
+### 4. Coverage Check
+
+* Annotated only if patient record explicitly confirmed as found.
+* Starts from Assistant’s first explicit question on coverage status.
+* Ends with User’s explicit confirmation (ACTIVE, INACTIVE, NOT ANSWERED).
+* Set as `null` if patient record not found.
+
+### 5-10. Drug Information (Exactly two drugs)
+
+* **Formulary Check:** Assistant explicitly asks if drug is covered.
+* **Restrictions Check:** Annotate only if formulary = YES. Assistant explicitly asks about prior authorization (PA), step therapy, or quantity limits.
+* **Copay Check:** Annotate only if restrictions explicitly = NO. Assistant explicitly asks about copay or coinsurance amounts.
+* Set as `null` if phase condition not met (e.g., formulary NO → restrictions/copay null).
+* If fewer than two drugs discussed, remaining drug fields are `null`.
+
+### 11. Agent Interaction
+
+* Span begins from Assistant's explicit request for User’s full name or call/reference number.
+* Ends at the last turn explicitly providing User’s name or reference number.
+* **Include:** All turns explicitly requesting/providing name/reference.
+* **Exclude:** Generic thank-yous, goodbyes, small talk, early volunteering before Assistant's explicit request, and farewell-only turns.
+* If final metadata exchange combined with polite closing, include entire turn.
+
+---
+
+### Critical Edge Case Instructions:
+
+* **Early volunteering:** Ignore user-provided information unless explicitly requested by Assistant.
+* **Multiple farewells:** Exclude farewell-only turns.
+* **Transferred calls:** Only annotate greeting if explicitly exchanged again.
+
+---
+
+### Final Checklist Before Submission:
+
+* Exactly 11 fields, adhering strictly to above guidelines.
+* Maximum one-turn overlap between consecutive phases.
+* Clearly mark `null` for events not occurring.
+
+---
+
+Use the provided guidelines precisely to ensure accurate and consistent annotations.
+
+## Transcript (array of dicts with role, content, turn):
+
+## {transcript_here}
