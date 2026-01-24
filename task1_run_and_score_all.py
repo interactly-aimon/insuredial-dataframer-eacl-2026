@@ -31,22 +31,17 @@ SYNTH_BASE_DIR = "data/synthetic"
 # -------------------------------------------------------------------------
 GEMINI_MODELS = [
     "gemini-2.5-flash",
+    "gemini-2.5-flash-lite",
     "gemini-2.0-flash",
-
-    "gemini-2.5-pro",
 ]
 
 OPENAI_MODELS = [
     "gpt-4o-mini",
     "gpt-4.1-mini",
     "gpt-4.1-nano",
-
-    "gpt-4.1",
-    "o3",
 ]
 
 ANTHROPIC_MODELS = [
-    "claude-sonnet-4-0",
 ]
 
 # ------------------------------ CONSTANTS --------------------------------
